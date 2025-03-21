@@ -214,30 +214,34 @@
             <div class="card-body">
                 <div class="mb-3">
                     <h6><i class="fas fa-star text-warning me-2"></i>Strengths</h6>
+                    {% set has_strengths = false %}
                     <ul>
                         {% for chapter, data in chapter_performance.items() %}
                             {% if data.percentage >= 75 %}
                                 <li>{{ chapter }}</li>
+                                {% set has_strengths = true %}
                             {% endif %}
                         {% endfor %}
                     </ul>
                     
-                    {% if not chapter_performance|selectattr('percentage', 'ge', 75)|list %}
+                    {% if not has_strengths %}
                         <p class="text-muted">No particular strengths identified in this test.</p>
                     {% endif %}
                 </div>
                 
                 <div class="mb-3">
                     <h6><i class="fas fa-exclamation-triangle text-danger me-2"></i>Areas for Improvement</h6>
+                    {% set has_weak_areas = false %}
                     <ul>
                         {% for chapter, data in chapter_performance.items() %}
                             {% if data.percentage < 50 %}
                                 <li>{{ chapter }}</li>
+                                {% set has_weak_areas = true %}
                             {% endif %}
                         {% endfor %}
                     </ul>
                     
-                    {% if not chapter_performance|selectattr('percentage', 'lt', 50)|list %}
+                    {% if not has_weak_areas %}
                         <p class="text-muted">No significant areas for improvement identified in this test.</p>
                     {% endif %}
                 </div>
