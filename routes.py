@@ -160,13 +160,15 @@ def teacher_dashboard():
         for student in students:
             results = TestResult.query.filter_by(student_id=student.id, completed=True).all()
             if results:
-                avg_score = sum(result.total_score for result in results) / len(results)
+                # Calculate average of percentages
+                percentages = [(result.total_score / Test.query.get(result.test_id).total_marks) for result in results]
+                avg_percentage = sum(percentages) / len(percentages)
                 tests_taken = len(results)
                 student_performance.append({
                     'id': student.id,
                     'name': student.username,
                     'tests_taken': tests_taken,
-                    'avg_score': round(avg_score, 2)
+                    'avg_score': avg_percentage  # This is now already a percentage (0-1)
                 })
             else:
                 student_performance.append({
@@ -1104,10 +1106,12 @@ def student_performance():
         else:
             data['percentage'] = 0
     
-    # Calculate overall performance
-    total_score = sum(result.total_score for result in completed_tests)
-    total_possible = sum(Test.query.get(result.test_id).total_marks for result in completed_tests)
-    overall_percentage = round((total_score / total_possible) * 100, 1) if total_possible > 0 else 0
+    # Calculate overall performance as average of percentages
+    if completed_tests:
+        percentages = [(result.total_score / Test.query.get(result.test_id).total_marks) for result in completed_tests]
+        overall_percentage = round((sum(percentages) / len(percentages)) * 100, 1)
+    else:
+        overall_percentage = 0
     
     return render_template('student/performance.html',
                           title='My Performance',
