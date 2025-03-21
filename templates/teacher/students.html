@@ -90,19 +90,19 @@
                 '{{ student.name }}',
             {% endfor %}
         ];
-        
+
         var avgScores = [
             {% for student in students %}
                 {{ student.avg_score }},
             {% endfor %}
         ];
-        
+
         var testsTaken = [
             {% for student in students %}
                 {{ student.tests_taken }},
             {% endfor %}
         ];
-        
+
         // Create chart
         var ctx = document.getElementById('studentPerformanceChart').getContext('2d');
         var chart = new Chart(ctx, {
