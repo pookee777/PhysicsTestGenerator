@@ -285,15 +285,23 @@
             let answeredCount = 0;
             
             // Check each question
-            $(".answer-field").each(function() {
+            $(".question-slide").each(function() {
+                let questionId = $(this).attr('id');
+                let hasAnswer = false;
+                
                 // For radio buttons (multiple choice and true/false)
-                if ($(this).is(":radio")) {
-                    if ($("input[name='" + $(this).attr("name") + "']:checked").length > 0) {
-                        answeredCount++;
-                    }
-                } 
+                let radioChecked = $(this).find("input[type='radio']:checked").length > 0;
+                if (radioChecked) {
+                    hasAnswer = true;
+                }
+                
                 // For text inputs
-                else if ($(this).is("textarea") && $(this).val().trim() !== "") {
+                let textareaValue = $(this).find("textarea").val();
+                if (textareaValue && textareaValue.trim() !== "") {
+                    hasAnswer = true;
+                }
+                
+                if (hasAnswer) {
                     answeredCount++;
                 }
             });
