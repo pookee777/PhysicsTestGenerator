@@ -715,7 +715,36 @@ def take_test(result_id):
             return redirect(url_for('take_test', result_id=result_id))
             
         elif 'submit_test' in request.form:
-            # Submit the entire test
+            # First save all answers from the form
+            for question, form in forms:
+                # Get the appropriate answer field based on question type
+                if question.question_type == QuestionType.MULTIPLE_CHOICE:
+                    answer = form.multiple_choice.data
+                elif question.question_type == QuestionType.TRUE_FALSE:
+                    answer = form.true_false.data
+                else:
+                    answer = form.text_answer.data
+                
+                # Update or create answer if answer has a value
+                if answer:
+                    existing_answer = QuestionAnswer.query.filter_by(
+                        test_result_id=test_result.id,
+                        question_id=question.id
+                    ).first()
+                    
+                    if existing_answer:
+                        existing_answer.student_answer = answer
+                    else:
+                        new_answer = QuestionAnswer(
+                            test_result_id=test_result.id,
+                            question_id=question.id,
+                            student_answer=answer
+                        )
+                        db.session.add(new_answer)
+            
+            db.session.commit()
+            
+            # Then submit the test
             return submit_test(result_id)
     
     return render_template('student/take_test.html',
