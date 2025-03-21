@@ -499,17 +499,17 @@ def student_create_test():
     
     form = StudentGenerateTestForm()
     
-    # Populate chapter choices
+    # Populate chapter choices with checkboxes
     chapters = Chapter.query.all()
-    form.chapter_id.choices = [(c.id, c.name) for c in chapters]
+    form.chapters.choices = [(c.id, c.name) for c in chapters]
     
     if form.validate_on_submit():
         # Get questions based on criteria
         query = Question.query
         
-        # Filter by chapter if not 'all'
-        if form.chapter_id.data:
-            query = query.filter_by(chapter_id=form.chapter_id.data)
+        # Filter by selected chapters
+        if form.chapters.data:
+            query = query.filter(Question.chapter_id.in_(form.chapters.data))
         
         # Filter by difficulty if not 'all'
         if form.difficulty.data != 'all':

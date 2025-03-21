@@ -35,29 +35,43 @@
                         {% endif %}
                     </div>
                     
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="chapter_id" class="form-label">Chapter</label>
-                            {{ form.chapter_id(class="form-select") }}
-                            {% if form.chapter_id.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.chapter_id.errors %}
-                                        <small>{{ error }}</small>
+                    <div class="mb-3">
+                        <label class="form-label">Chapters (Select at least one)</label>
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for subfield in form.chapters %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            {{ subfield(class="form-check-input") }}
+                                            <label class="form-check-label" for="{{ subfield.id }}">
+                                                {{ subfield.label }}
+                                            </label>
+                                        </div>
+                                    </div>
                                     {% endfor %}
                                 </div>
-                            {% endif %}
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="difficulty" class="form-label">Difficulty Level</label>
-                            {{ form.difficulty(class="form-select") }}
-                            {% if form.difficulty.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.difficulty.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
+                        {% if form.chapters.errors %}
+                            <div class="text-danger">
+                                {% for error in form.chapters.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="difficulty" class="form-label">Difficulty Level</label>
+                        {{ form.difficulty(class="form-select") }}
+                        {% if form.difficulty.errors %}
+                            <div class="text-danger">
+                                {% for error in form.difficulty.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                     
                     <div class="row mb-3">
@@ -143,7 +157,8 @@
                         <ul>
                             <li>Choose a balanced mix of difficulty levels</li>
                             <li>Allocate appropriate time (about 2-3 minutes per question)</li>
-                            <li>Test one chapter thoroughly before moving to another</li>
+                            <li>Select multiple related chapters to test yourself on connected concepts</li>
+                            <li>For focused revision, select just one chapter at a time</li>
                             <li>Review your performance after each test to identify weak areas</li>
                         </ul>
                     </div>
