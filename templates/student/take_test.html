@@ -81,9 +81,12 @@
                                     <div class="card bg-dark border-secondary">
                                         <div class="card-body">
                                             <div class="mb-2">
-                                                <div class="form-check">
-                                                    {{ form.multiple_choice(class="form-check-input answer-field") }}
+                                                {% for option in form.multiple_choice %}
+                                                <div class="form-check mb-2">
+                                                    {{ option(class="form-check-input answer-field") }}
+                                                    {{ option.label(class="form-check-label") }}
                                                 </div>
+                                                {% endfor %}
                                             </div>
                                         </div>
                                     </div>
@@ -91,9 +94,12 @@
                                     <div class="card bg-dark border-secondary">
                                         <div class="card-body">
                                             <div class="mb-2">
-                                                <div class="form-check">
-                                                    {{ form.true_false(class="form-check-input answer-field") }}
+                                                {% for option in form.true_false %}
+                                                <div class="form-check mb-2">
+                                                    {{ option(class="form-check-input answer-field") }}
+                                                    {{ option.label(class="form-check-label") }}
                                                 </div>
+                                                {% endfor %}
                                             </div>
                                         </div>
                                     </div>
