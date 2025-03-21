@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, FloatField
 from wtforms import BooleanField, IntegerField, HiddenField, RadioField, SelectMultipleField, widgets
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length, Optional
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length, Optional, NumberRange
 from wtforms.widgets import TextArea
 from models import User, QuestionDifficulty, QuestionType, UserRole
 
@@ -105,6 +105,14 @@ class StudentGenerateTestForm(FlaskForm):
     num_questions = IntegerField('Number of Questions', validators=[DataRequired()])
     duration_minutes = IntegerField('Duration (minutes)', validators=[DataRequired()])
     submit = SubmitField('Generate Test')
+
+
+class PersonalizedTestForm(FlaskForm):
+    title = StringField('Test Title', validators=[DataRequired()])
+    chapters = MultiCheckboxField('Chapters (Optional)', coerce=int, validators=[Optional()])
+    num_questions = IntegerField('Number of Questions', validators=[DataRequired(), NumberRange(min=3, max=30)])
+    duration_minutes = IntegerField('Duration (minutes)', validators=[DataRequired(), NumberRange(min=5, max=180)])
+    submit = SubmitField('Generate Personalized Test')
 
 
 class AnswerForm(FlaskForm):

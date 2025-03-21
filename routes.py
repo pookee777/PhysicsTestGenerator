@@ -570,6 +570,86 @@ def student_create_test():
                           form=form)
 
 
+@app.route('/student/personalized_test', methods=['GET', 'POST'])
+@login_required
+def personalized_test():
+    if current_user.role != UserRole.STUDENT:
+        flash("Access denied. Student permissions required.", "danger")
+        return redirect(url_for('index'))
+    
+    form = PersonalizedTestForm()
+    
+    # Populate chapter choices with checkboxes
+    chapters = Chapter.query.all()
+    form.chapters.choices = [(c.id, c.name) for c in chapters]
+    
+    if form.validate_on_submit():
+        try:
+            # Use the recommender to get personalized questions
+            chapter_ids = form.chapters.data if form.chapters.data else None
+            recommended_questions = recommender.recommend_questions(
+                student_id=current_user.id, 
+                chapter_ids=chapter_ids,
+                num_questions=form.num_questions.data
+            )
+            
+            # Ensure we have enough questions
+            if len(recommended_questions) < form.num_questions.data:
+                flash(f"Not enough questions available for personalized recommendations. Found {len(recommended_questions)}.", "warning")
+                # If we don't have enough recommended questions, fall back to a mix of questions
+                available_questions = Question.query
+                if chapter_ids:
+                    available_questions = available_questions.filter(Question.chapter_id.in_(chapter_ids))
+                additional_needed = form.num_questions.data - len(recommended_questions)
+                # Exclude questions already recommended
+                recommended_ids = [q.id for q in recommended_questions]
+                additional_questions = available_questions.filter(~Question.id.in_(recommended_ids)).limit(additional_needed).all()
+                recommended_questions.extend(additional_questions)
+            
+            # Create a new test
+            test = Test(
+                title=form.title.data,
+                description=f"Personalized test generated for {current_user.username}",
+                duration_minutes=form.duration_minutes.data,
+                creator_id=current_user.id,
+                is_public=False,  # Personal test
+                total_marks=sum(q.marks for q in recommended_questions)
+            )
+            db.session.add(test)
+            db.session.flush()
+            
+            # Add questions to test
+            for i, question in enumerate(recommended_questions):
+                test_question = TestQuestion(
+                    test_id=test.id,
+                    question_id=question.id,
+                    order=i+1
+                )
+                db.session.add(test_question)
+            
+            # Create test result (starts the test)
+            test_result = TestResult(
+                test_id=test.id,
+                student_id=current_user.id,
+                start_time=datetime.utcnow(),
+                completed=False
+            )
+            db.session.add(test_result)
+            db.session.commit()
+            
+            flash(f"Personalized test '{form.title.data}' created based on your performance history!", "success")
+            return redirect(url_for('take_test', result_id=test_result.id))
+            
+        except Exception as e:
+            # Handle errors gracefully
+            flash(f"Could not generate personalized test: {str(e)}", "danger")
+            return redirect(url_for('personalized_test'))
+    
+    return render_template('student/personalized_test.html',
+                          title='Generate Personalized Test',
+                          form=form)
+
+
 @app.route('/student/start_test/<int:test_id>', methods=['POST'])
 @login_required
 def start_test(test_id):
