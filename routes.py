@@ -13,6 +13,7 @@ from models import UserRole, QuestionDifficulty, QuestionType
 from forms import (LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm,
                   QuestionForm, CreateTestForm, StudentGenerateTestForm, AnswerForm)
 from utils import send_password_reset_email
+from recommendation import recommender
 
 # Add a context processor to make variables available to all templates
 @app.context_processor
