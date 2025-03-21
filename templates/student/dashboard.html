@@ -27,7 +27,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-muted">Average Score</h6>
-                        <h2 class="card-text">{{ avg_score|round|int }}</h2>
+                        <h2 class="card-text">{{ (avg_score * 100)|round|int }}%</h2>
                     </div>
                     <div class="text-success">
                         <i class="fas fa-chart-line fa-3x"></i>

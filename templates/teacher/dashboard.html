@@ -129,7 +129,7 @@
                                     <td>
                                         {% if student.tests_taken > 0 %}
                                             <div class="d-flex align-items-center">
-                                                <div class="me-2">{{ student.avg_score|round|int }}</div>
+                                                <div class="me-2">{{ (student.avg_score * 100)|round|int }}%</div>
                                                 <div class="progress flex-grow-1" style="height: 6px;">
                                                     <div class="progress-bar 
                                                         {% if student.avg_score >= 80 %}bg-success
