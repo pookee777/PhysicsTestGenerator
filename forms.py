@@ -1,9 +1,15 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, FloatField
-from wtforms import BooleanField, IntegerField, HiddenField, RadioField
+from wtforms import BooleanField, IntegerField, HiddenField, RadioField, SelectMultipleField, widgets
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length, Optional
 from wtforms.widgets import TextArea
 from models import User, QuestionDifficulty, QuestionType, UserRole
+
+
+# Create a custom MultiCheckbox field
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 
 class LoginForm(FlaskForm):
@@ -82,7 +88,7 @@ class CreateTestForm(FlaskForm):
 
 class StudentGenerateTestForm(FlaskForm):
     title = StringField('Test Title', validators=[DataRequired()])
-    chapter_id = SelectField('Chapter', coerce=int, validators=[DataRequired()])
+    chapters = MultiCheckboxField('Chapters', coerce=int, validators=[DataRequired()])
     difficulty = SelectField('Difficulty', choices=[
         ('all', 'All Difficulties'),
         (QuestionDifficulty.EASY.value, 'Easy'),
